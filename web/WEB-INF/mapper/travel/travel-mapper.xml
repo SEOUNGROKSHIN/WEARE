@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+
+<entry key="InsertTravel">
+        INSERT
+              INTO TRAVEL A
+        ( 
+          A.TRAVEL_NO
+        , A.GUIDE_NO
+        , A.TRAVEL_NAME
+        , A.TRAVEL_COST
+        , A.TRAVEL_STARTDATE
+        , A.TRAVEL_ENDDATE
+        , A.TRAVEL_ENROLL_DATE
+        , A.TRAVEL_ENROLL_STATUS
+        , A.TRAVEL_MAX
+        , A.TRAVEL_SUMMERY_1
+        , A.TRAVEL_INTRO
+        , A.TRAVEL_COURSE
+        , A.TRAVEL_INFORMATION
+        , A.TRAVEL_CHANGE_DATE
+        , A.SHOW_STATUS
+        )
+        VALUES
+        (
+          ?
+        , ?
+        , ?
+        , ?
+        , ?
+        , ?
+        , SYSDATE
+        , ?
+        , ?
+        , ?
+        , ?
+        , ?
+        , ?
+        , SYSDATE
+        , 'N'
+        )
+</entry>
+
+<entry key="InsertTravelOption">
+        INSERT
+              INTO TRAVEL_OPTION A
+        ( 
+          A.OPTION_NAME
+        , A.OPTION_PRICE
+        , A.OPTION_CODE
+        , A.TRAVEL_NO
+        )
+        VALUES
+        (
+          ?
+        , ?
+        , ?
+        , ?
+        )
+
+</entry>
+
+<entry key="InsertTravelAttachment">
+        INSERT
+              INTO TRAVELATTACHMENT A
+        ( 
+          A.T_ATTACHMENT_NO_1
+        , A.TRAVEL_NO
+        , A.ORIGINAL_NAME_1
+        , A.SAVED_NAME_1
+        , A.SAVE_PATH_1
+        , A.FILE_TYPE_1
+        , A.THUMBNAIL_PATH_1
+        , A.ATTACHMENT_STATUS_1
+        )
+        VALUES
+        (
+          SEQ_T_ATTACHMENT_NO_1.NEXTVAL
+        , ?
+        , ?
+        , ?
+        , ?
+        , ?
+        , ?
+        , ?
+        )
+</entry>
+
+<entry key="selectTravelNextNo">
+        SELECT
+               SEQ_TRAVEL_NO.nextval
+          FROM DUAL
+</entry>
+
+<entry key="selectAllEnrollStatusList">
+ SELECT 
+       A.TRAVEL_NO
+     , A.TRAVEL_COST
+     , A.TRAVEL_NAME
+     , A.TRAVEL_SELL_STATUS
+     , A.TRAVEL_STARTDATE
+     , A.TRAVEL_ENDDATE
+     , A.TRAVEL_ENROLL_DATE
+     , A.TRAVEL_ENROLL_STATUS
+     , B.MEMBER_ID
+     , A.SHOW_STATUS
+FROM TRAVEL A
+JOIN MEMBER B ON (A.GUIDE_NO = B.MEMBER_NO)
+WHERE A.TRAVEL_ENROLL_STATUS = '심사중'
+</entry>
+
+<entry key="selectAllList">
+ SELECT 
+       A.TRAVEL_NO
+     , A.TRAVEL_COST
+     , A.TRAVEL_NAME
+     , A.TRAVEL_SELL_STATUS
+     , A.TRAVEL_STARTDATE
+     , A.TRAVEL_ENDDATE
+     , A.TRAVEL_ENROLL_DATE
+     , A.TRAVEL_ENROLL_STATUS
+     , B.MEMBER_ID
+     , A.SHOW_STATUS
+FROM TRAVEL A
+JOIN MEMBER B ON (A.GUIDE_NO = B.MEMBER_NO)
+
+</entry>
+
+<entry key="updateTravelShowStatusToN">
+ UPDATE
+               TRAVEL A
+          SET A.SHOW_STATUS = 'N'
+         WHERE A.TRAVEL_NO = ?
+</entry>
+<entry key="updateTravelShowStatusToY">
+ UPDATE
+               TRAVEL A
+          SET A.SHOW_STATUS = 'Y'
+         WHERE A.TRAVEL_NO = ?
+</entry>
+
+<entry key="updateTravelSellStatusToStopSell">
+ UPDATE
+               TRAVEL A
+          SET A.TRAVEL_SELL_STATUS = '판매중지'
+         WHERE A.TRAVEL_NO = ?
+</entry>
+
+<entry key="updateTravelSellStatusToSell">
+ UPDATE
+               TRAVEL A
+          SET A.TRAVEL_SELL_STATUS = '판매중'
+         WHERE A.TRAVEL_NO = ?
+</entry>
+
+<entry key="insertTravelHistory">
+  INSERT
+              INTO TRAVEL_STATUS_HISTORY A
+        ( 
+          A.TRAVEL_STATUS_HISTORY_NO
+        , A.TRAVEL_STATUS
+        , A.STATUS_DATE
+        , A.TRAVEL_SALE_STATUS
+        , A.TRAVEL_NO
+        )
+        VALUES
+        (
+          SEQ_TRAVEL_STATUS_HISTORY_NO.NEXTVAL
+        , ?
+        , SYSDATE
+        , ?
+        , ?
+        )
+</entry>
+<entry key="insertFirstTravelHistory">
+ INSERT
+              INTO TRAVEL_STATUS_HISTORY A
+        ( 
+          A.TRAVEL_STATUS_HISTORY_NO
+        , A.TRAVEL_STATUS
+        , A.STATUS_DATE
+        , A.TRAVEL_NO
+        )
+        VALUES
+        (
+          SEQ_TRAVEL_STATUS_HISTORY_NO.NEXTVAL
+        , ?
+        , SYSDATE
+        , ?
+        )
+</entry>
+
+
+<entry key="updateTravelEnroll">
+ UPDATE
+               TRAVEL A
+          SET A.TRAVEL_SELL_STATUS = ?
+            , A.TRAVEL_ENROLL_STATUS = ?
+            , A.SHOW_STATUS = ?
+         WHERE A.TRAVEL_NO = ?
+</entry>
+
+<entry key="updateReturnTravelHistory">
+INSERT
+              INTO TRAVEL_STATUS_HISTORY A
+        ( 
+          A.TRAVEL_STATUS_HISTORY_NO
+        , A.TRAVEL_STATUS
+        , A.TRAVEL_RETURN_REASON
+        , A.STATUS_DATE
+        , A.TRAVEL_NO
+        )
+        VALUES
+        (
+          SEQ_TRAVEL_STATUS_HISTORY_NO.NEXTVAL
+        , ?
+        , ?
+        , SYSDATE
+        , ?
+        )
+</entry>
+<entry key="updateRejectTravelHistory">
+INSERT
+              INTO TRAVEL_STATUS_HISTORY A
+        ( 
+          A.TRAVEL_STATUS_HISTORY_NO
+        , A.TRAVEL_STATUS
+        , A.TRAVEL_REJECT_REASON
+        , A.STATUS_DATE
+        , A.TRAVEL_NO
+        )
+        VALUES
+        (
+          SEQ_TRAVEL_STATUS_HISTORY_NO.NEXTVAL
+        , ?
+        , ?
+        , SYSDATE
+        , ?
+        )
+</entry>
+
+<entry key="selectSellStatusTravelList">
+ SELECT 
+       A.TRAVEL_NO
+     , A.TRAVEL_COST
+     , A.TRAVEL_NAME
+     , A.TRAVEL_SELL_STATUS
+     , A.TRAVEL_STARTDATE
+     , A.TRAVEL_ENDDATE
+     , A.TRAVEL_ENROLL_DATE
+     , A.TRAVEL_ENROLL_STATUS
+     , B.MEMBER_ID
+     , A.SHOW_STATUS
+FROM TRAVEL A
+JOIN MEMBER B ON (A.GUIDE_NO = B.MEMBER_NO)
+WHERE A.TRAVEL_SELL_STATUS = '판매중'
+</entry>
+
+<entry key="selectGuideTravelList">
+ SELECT 
+       A.TRAVEL_NO
+     , A.TRAVEL_COST
+     , A.TRAVEL_NAME
+     , A.TRAVEL_SELL_STATUS
+     , A.TRAVEL_STARTDATE
+     , A.TRAVEL_ENDDATE
+     , A.TRAVEL_ENROLL_DATE
+     , A.TRAVEL_ENROLL_STATUS
+     , B.MEMBER_ID
+     , A.SHOW_STATUS
+FROM TRAVEL A
+JOIN MEMBER B ON (A.GUIDE_NO = B.MEMBER_NO)
+WHERE B.MEMBER_NO = ?
+
+</entry>
+
+<entry key="selectSellStatusAttachmentList">
+        SELECT
+               A.T_ATTACHMENT_NO_1
+             , A.TRAVEL_NO
+             , A.ORIGINAL_NAME_1
+             , A.SAVED_NAME_1
+             , A.SAVE_PATH_1
+             , A.FILE_TYPE_1
+             , A.THUMBNAIL_PATH_1
+             , A.ATTACHMENT_STATUS_1
+         FROM TRAVELATTACHMENT A
+        WHERE A.TRAVEL_NO = ?
+</entry>
+<entry key="selectTravelDetail">
+SELECT 
+       A.TRAVEL_NO
+     , A.TRAVEL_COST
+     , A.TRAVEL_NAME
+     , A.TRAVEL_SELL_STATUS
+     , A.TRAVEL_STARTDATE
+     , A.TRAVEL_ENDDATE
+     , A.TRAVEL_ENROLL_DATE
+     , A.TRAVEL_ENROLL_STATUS
+     , B.MEMBER_ID
+     , A.SHOW_STATUS
+     , A.TRAVEL_INTRO
+     , A.TRAVEL_COURSE
+     , A.TRAVEL_INFORMATION
+     , A.TRAVEL_SUMMERY_1
+     , A.TRAVEL_MAX
+FROM TRAVEL A
+JOIN MEMBER B ON (A.GUIDE_NO = B.MEMBER_NO)
+WHERE A.TRAVEL_NO = ?
+
+</entry>
+
+<entry key="selectTravelOptionList">
+SELECT 
+       A.OPTION_NAME
+     , A.OPTION_PRICE
+     , A.OPTION_CODE
+     , A.TRAVEL_NO
+ FROM TRAVEL_OPTION A
+ WHERE A.TRAVEL_NO = ?
+ 
+</entry>
+
+</properties>

@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+	<entry key="insertMember">
+        INSERT /* com.greedy.we.member.model.dao.MemberDAO#inserOneMember() */
+               INTO MEMBER A
+            (
+              A.MEMBER_NO
+            , A.MEMBER_ID
+            , A.MEMBER_PWD
+            , A.MEMBER_NICKNAME
+            , A.MEMBER_PHONE
+            , A.MEMBER_EMAIL
+            )
+            VALUES
+            (
+              SEQ_MEMBER_NO.NEXTVAL
+            , ?
+            , ?
+            , ?
+            , ?
+            , ?
+            )
+	</entry>
+	<entry key="selectEncryptPwd">
+        SELECT /* com.greedy.we.member.model.dao.MemberDAO#selectEncryptPwd() */
+               A.MEMBER_PWD
+          FROM MEMBER A
+         WHERE A.MEMBER_ID = ?
+	</entry>
+	
+	<entry key="selectLoginMember">
+        SELECT /* com.greedy.we.member.model.dao.MemberDAO#selectLoginMember() */
+               A.MEMBER_NO
+             , A.MEMBER_ID
+             , A.MEMBER_NICKNAME
+             , A.MEMBER_EMAIL
+             , A.MEMBER_PHONE
+             , A.MEMBER_STATUS
+             , A.MEMBER_ROLE
+             , A.MEMBER_ENROLLDATE
+             , A.GUIDE_RANK
+          FROM MEMBER A
+         WHERE A.MEMBER_ID = ?
+           AND A.MEMBER_STATUS = 'N'
+	</entry>
+	<entry key="updateMember">
+        UPDATE /* com.greedy.we.member.model.dao.MemberDAO#updateMember() 한미화 */
+		       MEMBER A
+		   SET A.MEMBER_NICKNAME = ?
+		     , A.MEMBER_PHONE = ?
+		     , A.MEMBER_EMAIL = ?
+		 WHERE A.MEMBER_STATUS = 'N'
+		   AND A.MEMBER_NO = ?
+	</entry>
+	<entry key="delteMember">
+        UPDATE /* com.greedy.we.member.model.MemberDAO#delteMember() 한미화 */
+               MEMBER A
+           SET A.MEMBER_STATUS = 'Y'
+         WHERE A.MEMBER_NO = ?
+	</entry>
+	<entry key="selectMemberIdEmail">
+		 SELECT /* com.greedy.we.member.model.dao.MemberDAO#selectMemberIdEmail() */
+               A.MEMBER_NO
+             , A.MEMBER_ID
+             , A.MEMBER_NICKNAME
+             , A.MEMBER_EMAIL
+             , A.MEMBER_PHONE
+             , A.MEMBER_STATUS
+             , A.MEMBER_ROLE
+             , A.MEMBER_ENROLLDATE
+          FROM MEMBER A
+         WHERE A.MEMBER_ID = ?
+           AND A.MEMBER_EMAIL= ?
+           AND A.MEMBER_STATUS = 'N'
+	</entry>
+	
+	<entry key="selectMemberNickNameEmail">
+         SELECT /* com.greedy.we.member.model.dao.MemberDAO#selectMemberIdEmail() */
+               A.MEMBER_NO
+             , A.MEMBER_ID
+             , A.MEMBER_NICKNAME
+             , A.MEMBER_EMAIL
+             , A.MEMBER_PHONE
+             , A.MEMBER_STATUS
+             , A.MEMBER_ROLE
+             , A.MEMBER_ENROLLDATE
+          FROM MEMBER A
+         WHERE A.MEMBER_NICKNAME = ?
+           AND A.MEMBER_EMAIL= ?
+           AND A.MEMBER_STATUS = 'N'
+	</entry>
+	<entry key="pwdUpdate">
+        UPDATE /* com.greedy.we.member.model.MemberDAO#pwdUpdate() 한미화 */
+               MEMBER A
+           SET A.MEMBER_PWD = ?
+         WHERE A.MEMBER_STATUS = 'N'
+           AND A.MEMBER_NO = ?
+	</entry>
+	<entry key="deleteGuide">
+		UPDATE /* com.greedy.we.member.model.MemberDAO#delteMember() 한미화 */
+               MEMBER A
+           SET A.MEMBER_ROLE = 'MEMBER'
+             , A.GUIDE_RANK = 'NULL'
+         WHERE A.MEMBER_NO = ?
+	</entry>
+	<entry key="memberCheck">
+        SELECT
+               A.MEMBER_NO
+             , A.MEMBER_ID
+             , A.MEMBER_NICKNAME
+             , A.MEMBER_EMAIL
+             , A.MEMBER_PHONE
+             , A.MEMBER_STATUS
+             , A.MEMBER_ROLE
+             , A.MEMBER_ENROLLDATE
+          FROM MEMBER A
+         WHERE A.MEMBER_NO = ?
+         
+	</entry>
+	<entry key="selectAllMemberList">
+        SELECT /* com.greedy.we.member.model.MemberDAO#selectAllMemberList() 한미화 */
+               A.MEMBER_NO
+             , A.MEMBER_ID
+             , A.MEMBER_NICKNAME
+             , A.MEMBER_EMAIL
+             , A.MEMBER_PHONE
+             , A.MEMBER_STATUS
+             , A.MEMBER_ROLE
+             , A.MEMBER_ENROLLDATE
+          FROM MEMBER A
+         WHERE A.MEMBER_STATUS = 'N'
+	</entry>
+	<entry key="selectNoMemberList">
+        SELECT /* com.greedy.we.member.model.MemberDAO#selectNoMemberList() 한미화 */
+               A.MEMBER_NO
+             , A.MEMBER_ID
+             , A.MEMBER_NICKNAME
+             , A.MEMBER_EMAIL
+             , A.MEMBER_PHONE
+             , A.MEMBER_STATUS
+             , A.MEMBER_ROLE
+             , A.MEMBER_ENROLLDATE
+          FROM MEMBER A
+         WHERE A.MEMBER_STATUS = 'Y'
+	</entry>
+	<entry key="deleteGuide">
+       UPDATE GUIDE_INFORMATION A
+          SET A.GUIDE_APPROVE = 'N'
+            , A.GUIDE_STATUS = 'N'
+        WHERE A.MEMBER_NO = ?
+	</entry>
+	<entry key="deleteRole">
+        UPDATE MEMBER A
+           SET A.MEMBER_ROLE = 'MEMBER'
+             , A.GUIDE_RANK = '0'
+         WHERE A.MEMBER_NO = ?
+	</entry>
+	<entry key="deleteRole">
+        UPDATE MEMBER A
+           SET A.MEMBER_ROLE = 'MEMBER'
+             , A.GUIDE_RANK = '0'
+         WHERE A.MEMBER_NO = ?
+	</entry>
+	
+	<entry key="resetPwd">
+	  UPDATE /* com.greedy.we.member.model.MemberDAO#resetPwd() 추지훈*/
+               MEMBER A
+           SET A.MEMBER_PWD = ?
+         WHERE A.MEMBER_ID = ?
+	</entry>
+</properties>

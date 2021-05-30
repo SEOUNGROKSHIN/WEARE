@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+
+<properties>
+	<entry key="selectSignUpGuideList">
+        SELECT /* com.greedy.we.guide.guideDAO#selectGuideList() 한미화 */
+               B.MEMBER_NO	 
+             , A.GUIDE_NAME	 
+             , A.GUIDE_EMAIL	 
+             , A.GUIDE_BANK	 
+             , A.GUIDE_ACCOUNT	 
+             , A.GUIDE_INTRO	 
+             , A.GUIDE_STATUS  
+             , A.GUIDE_RANK  
+             , A.GUIDE_WARNING_COUNT	 
+             , A.GUIDE_APPROVE
+             , A.GUIDE_ENROLLDATE
+             , C.G_ATTACHMENT_NO_1
+             , C.ORIGINAL_NAME_1
+             , C.SAVED_NAME_1
+             , C.SAVE_PATH_1
+             , C.THUMBNAIL_PATH_1
+             , C.FILE_TYPE_1
+	      FROM GUIDE_INFORMATION A
+	      JOIN MEMBER B ON (A.MEMBER_NO = B.MEMBER_NO)
+	      JOIN GUIDEATTACHMENT C ON (A.MEMBER_NO = C.REF_GUIDE_NO)
+	</entry>
+	<entry key="selectNoGuideList">
+        SELECT /* com.greedy.we.guide.guideDAO#selectGuideList() 한미화 */
+               B.MEMBER_NO	 
+             , A.GUIDE_NAME	 
+             , A.GUIDE_EMAIL	 
+             , A.GUIDE_BANK	 
+             , A.GUIDE_ACCOUNT	 
+             , A.GUIDE_INTRO	 
+             , A.GUIDE_STATUS  
+             , A.GUIDE_RANK  
+             , A.GUIDE_WARNING_COUNT	 
+             , A.GUIDE_APPROVE	 
+	      FROM GUIDE_INFORMATION A
+	      JOIN MEMBER B ON (A.MEMBER_NO = B.MEMBER_NO)
+	     WHERE A.GUIDE_APPROVE = 'N'
+	</entry>
+	<entry key="guideSignUp">
+       INSERT /* com.greedy.we.guide.guideDAO#guideSignUp() 한미화 */
+          INTO GUIDE_INFORMATION A
+        (
+          A.MEMBER_NO
+        , A.GUIDE_NAME
+        , A.GUIDE_EMAIL
+        , A.GUIDE_BANK
+        , A.GUIDE_ACCOUNT
+        , A.GUIDE_INTRO
+        , A.GUIDE_ENROLLDATE
+        )
+        VALUES
+        (
+          ?
+        , ?
+        , ?
+        , ?
+        , ?
+        , ?
+        , SYSDATE
+        )
+	</entry>
+	<entry key="selectThumbnailSequence">
+        SELECT
+               SEQ_GUIDE_NO.CURRVAL
+          FROM DUAL
+	</entry>
+	<entry key="insertAttachment">
+        INSERT
+          INTO GUIDEATTACHMENT A
+        (
+          A.G_ATTACHMENT_NO_1
+        , A.REF_GUIDE_NO
+        , A.ORIGINAL_NAME_1
+        , A.SAVED_NAME_1
+        , A.SAVE_PATH_1
+        , A.FILE_TYPE_1
+        , A.THUMBNAIL_PATH_1
+        )
+        VALUES
+        (
+          SEQ_G_ATTACHMENT_NO_1.NEXTVAL
+        , ?
+        , ?
+        , ?
+        , ?
+        , ?
+        , ?
+        )
+	</entry>
+	
+	<entry key="selectReservationList">
+	SELECT /* com.greedy.we.guide.model.dao.CalculationDAO#selectCalculateList() 이남경 */
+       A.TRAVEL_NO
+     , A.TRAVEL_NAME
+     , A.TRAVEL_STARTDATE
+     , A.TRAVEL_ENDDATE
+     , A.GUIDE_NO
+     , B.GUIDE_RANK
+     , C.GUIDE_COMMISSION
+     , D.RESERVATION_STATUS
+     , D.TRAVEL_RESERVATION_NO
+  FROM TRAVEL A
+  JOIN GUIDE_INFORMATION B ON(B.MEMBER_NO = A.GUIDE_NO)
+  JOIN GUIDE_RANK C ON (C. RANK_CODE = B.GUIDE_RANK)
+  JOIN TRAVEL_RESERVATION D ON (A.TRAVEL_NO = D.TRAVEL_NO)
+ WHERE A.GUIDE_NO = ?
+   AND B.GUIDE_RANK = C.RANK_CODE
+	</entry>
+	
+	<entry key="selectReservationDetail">
+	SELECT 
+       I.TRAVEL_RESERVATION_NO 
+     , I.TRAVEL_NAME
+     , I.MEMBER_NO 
+     , I.TRAVEL_NO 
+     , I.TRAVEL_COST 
+     , I.OPTION_NAME
+     , I.OPTION_PRICE
+     , I.RESERVATION_STATUS 
+     , I.KOR_FIRST_NAME
+     , I.ENG_FIRST_NAME
+     , I.GENDER
+     , I.PHONE
+     , I.MEMBER_EMAIL
+     , I.BIRTH
+     , I.GUIDE_NAME 
+     , I.GUIDE_EMAIL 
+     , I.GUIDE_BANK
+     , I.GUIDE_ACCOUNT
+     , I.GUIDE_COMMISSION
+     , J.TRAVEL_RESERVATION_NO 
+     , J.COUNTER
+  FROM (SELECT
+               DISTINCT A.TRAVEL_RESERVATION_NO 
+             , B.TRAVEL_NAME
+             , A.MEMBER_NO 
+             , B.TRAVEL_NO 
+             , B.TRAVEL_COST 
+             , E.OPTION_NAME
+             , E.OPTION_PRICE
+             , A.RESERVATION_STATUS 
+             , C.KOR_FIRST_NAME
+             , C.ENG_FIRST_NAME
+             , C.GENDER
+             , C.PHONE
+             , C.MEMBER_EMAIL
+             , C.BIRTH
+             , G.GUIDE_NAME 
+             , G.GUIDE_EMAIL 
+             , G.GUIDE_BANK
+             , G.GUIDE_ACCOUNT
+             , K.GUIDE_COMMISSION
+          FROM TRAVEL_RESERVATION A    
+          JOIN TRAVEL B ON(B.TRAVEL_NO = A.TRAVEL_NO)
+          JOIN RESERVATION_MEMBER_INFO C ON (C.TRAVEL_RESERVATION_NO = A.TRAVEL_RESERVATION_NO)
+          JOIN MEMBER D ON (A.MEMBER_NO = D.MEMBER_NO  )
+          LEFT JOIN TRAVEL_OPTION E ON(E.OPTION_CODE = A.OPTION_CODE
+                                       AND A.TRAVEL_NO = E.TRAVEL_NO)
+          JOIN GUIDE_INFORMATION G ON (A.GUIDE_NO = G.MEMBER_NO)
+          JOIN GUIDE_RANK K ON ( G.GUIDE_RANK = K.RANK_CODE)
+          ) I
+          JOIN (SELECT
+                       F.TRAVEL_RESERVATION_NO 
+                     , TO_CHAR(COUNT(F.PHONE),'999')  AS COUNTER
+                  FROM RESERVATION_MEMBER_INFO F
+                 GROUP BY F.TRAVEL_RESERVATION_NO
+                 ) J 
+          ON (I.TRAVEL_RESERVATION_NO = J.TRAVEL_RESERVATION_NO)
+          WHERE I.TRAVEL_NO = ?
+	</entry>
+	<entry key="selectCalculateList">
+	SELECT /* com.greedy.we.guide.model.dao.CalculationDAO#selectCalculateList() 이남경 */
+       A.TRAVEL_NO
+     , A.TRAVEL_NAME
+     , A.TRAVEL_STARTDATE
+     , A.TRAVEL_ENDDATE
+     , A.GUIDE_NO
+     , B.GUIDE_RANK
+     , C.GUIDE_COMMISSION
+     , D.RESERVATION_STATUS
+     , D.TRAVEL_RESERVATION_NO
+  FROM TRAVEL A
+  JOIN GUIDE_INFORMATION B ON(B.MEMBER_NO = A.GUIDE_NO)
+  JOIN GUIDE_RANK C ON (C. RANK_CODE = B.GUIDE_RANK)
+  JOIN TRAVEL_RESERVATION D ON (A.TRAVEL_NO = D.TRAVEL_NO)
+ WHERE A.GUIDE_NO = ?
+   AND B.GUIDE_RANK = C.RANK_CODE
+   AND D.RESERVATION_STATUS = 4
+    OR D.RESERVATION_STATUS = 5
+    OR D.RESERVATION_STATUS = 6
+    OR D.RESERVATION_STATUS = 7
+
+	</entry>
+	<entry key="selectCalculateDetail">
+	SELECT 
+       I.TRAVEL_RESERVATION_NO 
+     , I.TRAVEL_NAME
+     , I.MEMBER_NO 
+     , I.TRAVEL_NO 
+     , I.TRAVEL_COST 
+     , I.OPTION_NAME
+     , I.OPTION_PRICE
+     , I.RESERVATION_STATUS 
+     , I.KOR_FIRST_NAME
+     , I.ENG_FIRST_NAME
+     , I.GENDER
+     , I.PHONE
+     , I.MEMBER_EMAIL
+     , I.BIRTH
+     , I.GUIDE_NAME 
+     , I.GUIDE_EMAIL 
+     , I.GUIDE_BANK
+     , I.GUIDE_ACCOUNT
+     , I.GUIDE_COMMISSION
+     , J.TRAVEL_RESERVATION_NO 
+     , J.COUNTER
+  FROM (SELECT
+               DISTINCT A.TRAVEL_RESERVATION_NO 
+             , B.TRAVEL_NAME
+             , A.MEMBER_NO 
+             , B.TRAVEL_NO 
+             , B.TRAVEL_COST 
+             , E.OPTION_NAME
+             , E.OPTION_PRICE
+             , A.RESERVATION_STATUS 
+             , C.KOR_FIRST_NAME
+             , C.ENG_FIRST_NAME
+             , C.GENDER
+             , C.PHONE
+             , C.MEMBER_EMAIL
+             , C.BIRTH
+             , G.GUIDE_NAME 
+             , G.GUIDE_EMAIL 
+             , G.GUIDE_BANK
+             , G.GUIDE_ACCOUNT
+             , K.GUIDE_COMMISSION
+          FROM TRAVEL_RESERVATION A    
+          JOIN TRAVEL B ON(B.TRAVEL_NO = A.TRAVEL_NO)
+          JOIN RESERVATION_MEMBER_INFO C ON (C.TRAVEL_RESERVATION_NO = A.TRAVEL_RESERVATION_NO)
+          JOIN MEMBER D ON (A.MEMBER_NO = D.MEMBER_NO  )
+          LEFT JOIN TRAVEL_OPTION E ON(E.OPTION_CODE = A.OPTION_CODE
+                                       AND A.TRAVEL_NO = E.TRAVEL_NO)
+          JOIN GUIDE_INFORMATION G ON (A.GUIDE_NO = G.MEMBER_NO)
+          JOIN GUIDE_RANK K ON ( G.GUIDE_RANK = K.RANK_CODE)
+          ) I
+          JOIN (SELECT
+                       F.TRAVEL_RESERVATION_NO 
+                     , TO_CHAR(COUNT(F.PHONE),'999')  AS COUNTER
+                  FROM RESERVATION_MEMBER_INFO F
+                 GROUP BY F.TRAVEL_RESERVATION_NO
+                 ) J 
+          ON (I.TRAVEL_RESERVATION_NO = J.TRAVEL_RESERVATION_NO)
+          WHERE I.TRAVEL_NO = ?
+	</entry>
+	<entry key="insertCalculation">
+	INSERT 
+	  INTO GUIDE_CALCULATE C
+         (
+           C.CALCULATE_NO
+         , C.GUIDE_CALCULATE_SUM
+         , C.GUIDE_CALCULATE_STATUS
+         , C.PAYMENT_NO
+         , C.GUIDE_NO
+         , C.TRAVEL_NO
+         )
+         SELECT
+                SEQ_CALCULATE_NO.NEXTVAL
+              , 'Y'
+              , '1'
+              , B.PAYMENT_NO
+              , A.GUIDE_NO
+              , A.TRAVEL_NO 
+           FROM TRAVEL_RESERVATION A
+           JOIN PAYMENT B ON (A.TRAVEL_RESERVATION_NO = B.TRAVEL_RESERVATION_NO)
+          WHERE A.TRAVEL_RESERVATION_NO = ?
+	</entry>
+	<entry key="updatereservationStatus">
+	UPDATE TRAVEL_RESERVATION A
+       SET A.RESERVATION_STATUS = '5'
+     WHERE A.TRAVEL_RESERVATION_NO = ?
+	</entry>
+	<entry key="approveGuide">
+       UPDATE GUIDE_INFORMATION A
+          SET A.GUIDE_APPROVE = 'Y'
+            , A.GUIDE_STATUS = 'Y'
+        WHERE A.MEMBER_NO = ?
+       
+	</entry>
+	
+	<entry key="changeMemberRole">
+        UPDATE MEMBER A
+           SET A.MEMBER_ROLE = 'GUIDE'
+             , A.GUIDE_RANK = '3'
+         WHERE A.MEMBER_NO = ?
+           
+	</entry>
+</properties>

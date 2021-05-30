@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<entry key="selectReservationList">
+SELECT 
+       H.TRAVEL_RESERVATION_NO 
+     , H.TRAVEL_RESERVATION_DATE 
+     , H.TRAVEL_NAME 
+     , H.MEMBER_NO 
+     , H.TRAVEL_NO 
+     , H.TRAVEL_COST 
+     , H.RESERVATION_STATUS 
+     , H.TRAVEL_STARTDATE 
+     , H.TRAVEL_ENDDATE
+     , H.OPTION_PRICE
+     , I.TRAVEL_RESERVATION_NO 
+     , I.COUNTER
+      FROM (SELECT
+                   DISTINCT A.TRAVEL_RESERVATION_NO 
+                 , A.TRAVEL_RESERVATION_DATE 
+                 , B.TRAVEL_NAME 
+                 , A.MEMBER_NO 
+                 , B.TRAVEL_NO 
+                 , B.TRAVEL_COST 
+                 , A.RESERVATION_STATUS 
+                 , B.TRAVEL_STARTDATE 
+                 , B.TRAVEL_ENDDATE 
+                 , A.GUIDE_NO
+                 , E.OPTION_PRICE
+              FROM TRAVEL_RESERVATION A    
+              JOIN TRAVEL B ON(B.TRAVEL_NO = A.TRAVEL_NO)
+              JOIN RESERVATION_MEMBER_INFO C ON (C.TRAVEL_RESERVATION_NO = A.TRAVEL_RESERVATION_NO)
+              JOIN MEMBER D ON (A.MEMBER_NO = D.MEMBER_NO)
+              LEFT JOIN TRAVEL_OPTION E ON (A.OPTION_CODE = E.OPTION_CODE
+                                            AND A.TRAVEL_NO = E.TRAVEL_NO)
+              
+          ) H
+    JOIN (SELECT
+                 F.TRAVEL_RESERVATION_NO 
+               , TO_CHAR(COUNT(F.PHONE),'999') AS COUNTER
+            FROM RESERVATION_MEMBER_INFO F
+            GROUP BY F.TRAVEL_RESERVATION_NO
+         ) I 
+       ON (H.TRAVEL_RESERVATION_NO = I.TRAVEL_RESERVATION_NO)
+       WHERE H.MEMBER_NO = ?
+</entry>
+<entry key="selectReservationDetail">
+ SELECT 
+       I.TRAVEL_RESERVATION_NO 
+     , I.TRAVEL_RESERVATION_DATE
+     , I.TRAVEL_NAME
+     , I.OPTION_NAME
+     , I.OPTION_PRICE
+     , I.TRAVEL_INTRO
+     , I.TRAVEL_COURSE 
+     , I.TRAVEL_INFORMATION
+     , I.MEMBER_NO 
+     , I.TRAVEL_NO 
+     , I.TRAVEL_COST 
+     , I.RESERVATION_STATUS 
+     , I.TRAVEL_STARTDATE 
+     , I.TRAVEL_ENDDATE
+     , I.KOR_FIRST_NAME
+     , I.ENG_FIRST_NAME
+     , I.GENDER
+     , I.PHONE
+     , I.MEMBER_EMAIL
+     , I.BIRTH
+     , I.GUIDE_NAME 
+     , I.GUIDE_EMAIL 
+     , I.PAYMENT_NO 
+     , I.PAYMENT_CATEGORY 
+     , J.TRAVEL_RESERVATION_NO 
+     , J.COUNTER
+  FROM (SELECT
+               DISTINCT A.TRAVEL_RESERVATION_NO 
+             , A.TRAVEL_RESERVATION_DATE
+             , E.OPTION_NAME
+             , E.OPTION_PRICE
+             , B.TRAVEL_NAME
+             , B.TRAVEL_INTRO 
+             , B.TRAVEL_COURSE 
+             , B.TRAVEL_INFORMATION
+             , A.MEMBER_NO 
+             , B.TRAVEL_NO 
+             , B.TRAVEL_COST 
+             , A.RESERVATION_STATUS 
+             , B.TRAVEL_STARTDATE 
+             , B.TRAVEL_ENDDATE
+             , C.KOR_FIRST_NAME
+             , C.ENG_FIRST_NAME
+             , C.GENDER
+             , C.PHONE
+             , C.MEMBER_EMAIL
+             , C.BIRTH
+             , G.GUIDE_NAME 
+             , G.GUIDE_EMAIL 
+             , H.PAYMENT_NO 
+             , H.PAYMENT_CATEGORY 
+          FROM TRAVEL_RESERVATION A    
+          JOIN TRAVEL B ON(B.TRAVEL_NO = A.TRAVEL_NO)
+          JOIN RESERVATION_MEMBER_INFO C ON (C.TRAVEL_RESERVATION_NO = A.TRAVEL_RESERVATION_NO)
+          JOIN MEMBER D ON (A.MEMBER_NO = D.MEMBER_NO  )
+          LEFT JOIN TRAVEL_OPTION E ON(E.OPTION_CODE = A.OPTION_CODE
+                                       AND A.TRAVEL_NO = E.TRAVEL_NO)
+          JOIN GUIDE_INFORMATION G ON (A.GUIDE_NO = G.MEMBER_NO)
+          JOIN PAYMENT H ON ( A.TRAVEL_RESERVATION_NO = H. TRAVEL_RESERVATION_NO)
+          ) I
+          JOIN (SELECT
+                       F.TRAVEL_RESERVATION_NO 
+                     , TO_CHAR(COUNT(F.PHONE),'999')  AS COUNTER
+                  FROM RESERVATION_MEMBER_INFO F
+                 GROUP BY F.TRAVEL_RESERVATION_NO
+                 ) J 
+          ON (I.TRAVEL_RESERVATION_NO = J.TRAVEL_RESERVATION_NO)
+          WHERE I.TRAVEL_RESERVATION_NO = ?
+</entry>
+<entry key="selectOnetravelProduct">
+	SELECT
+	       A.TRAVEL_NAME
+	     , A.TRAVEL_COST
+	     , A.TRAVEL_STARTDATE
+	     , A.TRAVEL_ENDDATE
+	     , A.TRAVEL_COURSE
+	     , B.OPTION_NAME
+	     , B.OPTION_PRICE
+	     , B.OPTION_CODE
+	FROM (SELECT
+	       C.TRAVEL_NAME
+	     , C.TRAVEL_COST
+	     , C.TRAVEL_STARTDATE
+	     , C.TRAVEL_ENDDATE
+	     , C.TRAVEL_COURSE
+	     , C.TRAVEL_NO
+	     , C.TRAVEL_SELL_STATUS
+	  FROM TRAVEL C) A
+	  JOIN(
+	        SELECT
+	               D.OPTION_NAME
+	             , D.OPTION_PRICE
+	             , D.OPTION_CODE
+	             , D.TRAVEL_NO
+	          FROM TRAVEL_OPTION D
+	      )B
+	      ON(A.TRAVEL_NO = B.TRAVEL_NO)
+	 WHERE A.TRAVEL_SELL_STATUS = '판매중'
+	   AND A.TRAVEL_NO = ?
+</entry>
+<entry key="selectGuideNo">
+SELECT
+       A.GUIDE_NAME
+  FROM GUIDE_INFORMATION A
+      , TRAVEL B
+ WHERE A.MEMBER_NO = B.GUIDE_NO
+   AND B.TRAVEL_NO = ?
+</entry>
+
+<entry key="InsertReservation">
+INSERT
+  INTO TRAVEL_RESERVATION A
+        ( 
+          A.TRAVEL_RESERVATION_NO
+        , A.TRAVEL_RESERVATION_DATE
+        , A.MEMBER_NO
+        , A.TRAVEL_NO
+        , A.CALCULATE_NO
+        , A.RESERVATION_STATUS
+        , A.GUIDE_NO
+        , A.OPTION_CODE
+        )
+          SELECT
+               ?
+             , SYSDATE
+             , ?
+             , ?
+             , ?
+             , 1
+             , B.GUIDE_NO
+             , ?
+          FROM TRAVEL B
+          WHERE B.TRAVEL_NO = ?
+        
+</entry>
+
+<entry key="InsertPayment">
+INSERT
+  INTO PAYMENT A
+        ( 
+          A.PAYMENT_NO
+        , A.PAYMENT_DATE
+        , A.PAYMENT_CATEGORY
+        , A.PAYMENT_STATUS
+        , A.PAYMENT_APPROVAL_NO
+        , A.TRAVEL_RESERVATION_NO
+        , A.MEMBER_NO
+        )
+        VALUES
+        (
+          ?
+        , ?
+        , '카드'
+        , 'Y'
+        , ?
+        , ?
+        , ?
+        )
+</entry>
+<entry key="InsertTravelMemberInfo">
+INSERT
+  INTO RESERVATION_MEMBER_INFO A
+        ( 
+          A.TRAVEL_RESERVATION_NO
+        , A.KOR_FIRST_NAME
+        , A.ENG_FIRST_NAME
+        , A.GENDER
+        , A.PHONE
+        , A.MEMBER_EMAIL
+        , A.BIRTH
+        )
+        VALUES
+        (
+          ?
+        , ?
+        , ?
+        , ?
+        , ?
+        , ?
+        , ?
+        )
+</entry>
+<entry key="updateReservationStatusNorefund">
+    UPDATE TRAVEL_RESERVATION A
+       SET A.RESERVATION_STATUS = '4'
+     WHERE A.TRAVEL_RESERVATION_NO = ?
+</entry>
+<entry key="updateTravelShowStatus">
+    UPDATE TRAVEL A
+       SET A.TRAVEL_SELL_STATUS = '판매 완료'
+     WHERE A.TRAVEL_NO = ?
+</entry>
+</properties>

@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<!-- 남경 관리자 결제 내역 리스트 -->
+<entry key="selectAllreservationList">
+SELECT 
+      H.TRAVEL_RESERVATION_DATE  
+     , H.TRAVEL_NO 
+     , H.RESERVATION_STATUS  
+     , H.TRAVEL_STARTDATE 
+     , H.TRAVEL_ENDDATE 
+     , H.GUIDE_NAME 
+     , H.MEMBER_NICKNAME 
+     , I.TRAVEL_RESERVATION_NO 
+     , I.COUNTER
+      FROM (SELECT
+                   DISTINCT A.TRAVEL_RESERVATION_NO 
+                 , A.TRAVEL_RESERVATION_DATE 
+                 , B.TRAVEL_NAME 
+                 , B.TRAVEL_NO 
+                 , A.RESERVATION_STATUS 
+                 , B.TRAVEL_STARTDATE 
+                 , B.TRAVEL_ENDDATE 
+                 , A.GUIDE_NO
+                 , P.GUIDE_NAME
+                 , D.MEMBER_NICKNAME
+              FROM TRAVEL_RESERVATION A    
+              JOIN TRAVEL B ON(B.TRAVEL_NO = A.TRAVEL_NO)
+              JOIN RESERVATION_MEMBER_INFO C ON (C.TRAVEL_RESERVATION_NO = A.TRAVEL_RESERVATION_NO)
+              JOIN MEMBER D ON (A.MEMBER_NO = D.MEMBER_NO  )
+              JOIN GUIDE_INFORMATION P ON (A.GUIDE_NO = P.MEMBER_NO)
+          ) H
+    JOIN (SELECT
+                 F.TRAVEL_RESERVATION_NO 
+               , TO_CHAR(COUNT(F.PHONE),'999') AS COUNTER
+            FROM RESERVATION_MEMBER_INFO F
+            GROUP BY F.TRAVEL_RESERVATION_NO
+         ) I 
+       ON (H.TRAVEL_RESERVATION_NO = I.TRAVEL_RESERVATION_NO)
+</entry>
+
+<!-- 남경 관리자 결제 내역 상세 페이지  --> 
+<entry key="selectReservationDetail">
+	SELECT 
+	       I.TRAVEL_RESERVATION_NO 
+	     , I.TRAVEL_RESERVATION_DATE
+	     , I.TRAVEL_NAME
+	     , I.TRAVEL_INTRO 
+	     , I.TRAVEL_COURSE 
+	     , I.TRAVEL_INFORMATION
+	     , I.MEMBER_NO 
+	     , I.TRAVEL_NO 
+	     , I.TRAVEL_COST 
+	     , I.RESERVATION_STATUS
+	     , I.TRAVEL_STARTDATE 
+	     , I.TRAVEL_ENDDATE
+	     , I.KOR_FIRST_NAME
+	     , I.ENG_FIRST_NAME
+	     , I.GENDER
+	     , I.PHONE
+	     , I.MEMBER_EMAIL
+	     , I.BIRTH
+	     , I.GUIDE_NAME 
+	     , I.GUIDE_EMAIL 
+	     , I.PAYMENT_NO 
+	     , I.PAYMENT_CATEGORY 
+         , I.PAYMENT_APPROVAL_NO
+	     , J.TRAVEL_RESERVATION_NO 
+	     , J.COUNTER
+	  FROM (SELECT
+	               DISTINCT A.TRAVEL_RESERVATION_NO 
+	             , A.TRAVEL_RESERVATION_DATE
+	             , B.TRAVEL_NAME
+	             , B.TRAVEL_INTRO 
+	             , B.TRAVEL_COURSE 
+	             , B.TRAVEL_INFORMATION
+	             , A.MEMBER_NO 
+	             , B.TRAVEL_NO 
+	             , B.TRAVEL_COST 
+	             , A.RESERVATION_STATUS
+	             , B.TRAVEL_STARTDATE 
+	             , B.TRAVEL_ENDDATE
+	             , C.KOR_FIRST_NAME
+	             , C.ENG_FIRST_NAME
+	             , C.GENDER
+	             , C.PHONE
+	             , C.MEMBER_EMAIL
+	             , C.BIRTH
+	             , G.GUIDE_NAME 
+	             , G.GUIDE_EMAIL 
+	             , H.PAYMENT_NO 
+	             , H.PAYMENT_CATEGORY 
+                 , H.PAYMENT_APPROVAL_NO
+                 
+	          FROM TRAVEL_RESERVATION A    
+	          JOIN TRAVEL B ON(B.TRAVEL_NO = A.TRAVEL_NO)
+	          JOIN RESERVATION_MEMBER_INFO C ON (C.TRAVEL_RESERVATION_NO = A.TRAVEL_RESERVATION_NO)
+	          JOIN MEMBER D ON (A.MEMBER_NO = D.MEMBER_NO  )
+	          JOIN GUIDE_INFORMATION G ON (A.GUIDE_NO = G.MEMBER_NO)
+	          JOIN PAYMENT H ON ( A.TRAVEL_RESERVATION_NO = H. TRAVEL_RESERVATION_NO)
+	          ) I
+	          JOIN (SELECT
+	                       F.TRAVEL_RESERVATION_NO 
+	                     , TO_CHAR(COUNT(F.PHONE),'999')  AS COUNTER
+	                  FROM RESERVATION_MEMBER_INFO F
+	                 GROUP BY F.TRAVEL_RESERVATION_NO
+	                 ) J 
+	          ON (I.TRAVEL_RESERVATION_NO = J.TRAVEL_RESERVATION_NO)
+	          WHERE I.TRAVEL_RESERVATION_NO = ?
+</entry>
+<entry key="selectCalculateRequestStatusList">
+ SELECT DISTINCT
+        H.TRAVEL_NO
+      , H.GUIDE_NO
+      , H.GUIDE_NAME
+      , H.TRAVEL_STARTDATE
+      , H.TRAVEL_ENDDATE
+      , H.TRAVEL_COST
+      , H.OPTION_CODE
+      , H.RESERVATION_STATUS
+      , H.OPTION_PRICE
+      , H.GUIDE_RANK
+      , H.GUIDE_COMMISSION
+      , H.PAY_DATE
+      , I.TRAVEL_RESERVATION_NO 
+      , I.COUNTER       
+        FROM( SELECT
+                     A.TRAVEL_NO
+                   , A.GUIDE_NO
+                   , B.GUIDE_NAME
+                   , C.TRAVEL_STARTDATE
+                   , C.TRAVEL_ENDDATE
+                   , C.TRAVEL_COST
+                   , D.OPTION_CODE
+                   , D.RESERVATION_STATUS
+                   , D.TRAVEL_RESERVATION_NO
+                   , E.OPTION_PRICE
+                   , B.GUIDE_RANK
+                   , F.GUIDE_COMMISSION
+                   , G.PAY_DATE
+               FROM GUIDE_CALCULATE A
+               JOIN GUIDE_INFORMATION B ON (A.GUIDE_NO = B.MEMBER_NO)
+               JOIN TRAVEL C ON (A.TRAVEL_NO = C.TRAVEL_NO)
+               JOIN TRAVEL_RESERVATION D ON (D.TRAVEL_NO = A.TRAVEL_NO)
+               LEFT JOIN TRAVEL_OPTION E ON (D.OPTION_CODE = E.OPTION_CODE
+                                             AND A.TRAVEL_NO = E.TRAVEL_NO)
+               JOIN GUIDE_RANK F ON (B.GUIDE_RANK = F.RANK_CODE)
+               LEFT JOIN GUIDE_CALCULATEPAY_HISTORY G ON (A.CALCULATE_NO = G.CALCULATE_NO)
+               )H
+         JOIN
+              ( SELECT
+                       F.TRAVEL_RESERVATION_NO 
+                     , TO_CHAR(COUNT(F.PHONE),'999') AS COUNTER
+                  FROM RESERVATION_MEMBER_INFO F
+                 GROUP BY F.TRAVEL_RESERVATION_NO
+              )I
+          ON (H.TRAVEL_RESERVATION_NO = I.TRAVEL_RESERVATION_NO) 
+</entry>
+<entry key="selectCalculateRequestStatusDetail">
+SELECT 
+       I.TRAVEL_RESERVATION_NO 
+     , I.TRAVEL_NAME
+     , I.MEMBER_NO
+     , I.GUIDE_NO 
+     , I.TRAVEL_NO 
+     , I.TRAVEL_COST 
+     , I.OPTION_NAME
+     , I.OPTION_PRICE
+     , I.RESERVATION_STATUS 
+     , I.KOR_FIRST_NAME
+     , I.ENG_FIRST_NAME
+     , I.GENDER
+     , I.PHONE
+     , I.MEMBER_EMAIL
+     , I.BIRTH
+     , I.GUIDE_NAME 
+     , I.GUIDE_EMAIL 
+     , I.GUIDE_BANK
+     , I.GUIDE_ACCOUNT
+     , I.GUIDE_COMMISSION
+     , I.CALCULATE_NO
+     , J.TRAVEL_RESERVATION_NO 
+     , J.COUNTER
+  FROM (SELECT
+               DISTINCT A.TRAVEL_RESERVATION_NO 
+             , B.TRAVEL_NAME
+             , A.MEMBER_NO
+             , A.GUIDE_NO
+             , B.TRAVEL_NO 
+             , B.TRAVEL_COST 
+             , E.OPTION_NAME
+             , E.OPTION_PRICE
+             , A.RESERVATION_STATUS 
+             , C.KOR_FIRST_NAME
+             , C.ENG_FIRST_NAME
+             , C.GENDER
+             , C.PHONE
+             , C.MEMBER_EMAIL
+             , C.BIRTH
+             , G.GUIDE_NAME 
+             , G.GUIDE_EMAIL 
+             , G.GUIDE_BANK
+             , G.GUIDE_ACCOUNT
+             , K.GUIDE_COMMISSION
+             , O.CALCULATE_NO
+          FROM TRAVEL_RESERVATION A    
+          JOIN TRAVEL B ON(B.TRAVEL_NO = A.TRAVEL_NO)
+          JOIN RESERVATION_MEMBER_INFO C ON (C.TRAVEL_RESERVATION_NO = A.TRAVEL_RESERVATION_NO)
+          JOIN MEMBER D ON (A.MEMBER_NO = D.MEMBER_NO  )
+          LEFT JOIN TRAVEL_OPTION E ON(E.OPTION_CODE = A.OPTION_CODE
+                                       AND A.TRAVEL_NO = E.TRAVEL_NO)
+          JOIN GUIDE_INFORMATION G ON (A.GUIDE_NO = G.MEMBER_NO)
+          JOIN GUIDE_RANK K ON ( G.GUIDE_RANK = K.RANK_CODE)
+          JOIN GUIDE_CALCULATE O ON (A.GUIDE_NO = O.GUIDE_NO)
+          ) I
+          JOIN (SELECT
+                       F.TRAVEL_RESERVATION_NO 
+                     , TO_CHAR(COUNT(F.PHONE),'999')  AS COUNTER
+                  FROM RESERVATION_MEMBER_INFO F
+                 GROUP BY F.TRAVEL_RESERVATION_NO
+                 ) J 
+          ON (I.TRAVEL_RESERVATION_NO = J.TRAVEL_RESERVATION_NO)
+          WHERE I.TRAVEL_NO = ?
+</entry>
+<entry key="insertCalculationApprove">
+INSERT INTO  GUIDE_CALCULATEPAY_HISTORY
+    (
+     PAY_DATE, PAY_PRICE, MEMBER_NO, CALCULATE_NO
+    )
+    VALUES
+    (
+     SYSDATE, ? , ? , ?
+    )
+</entry>
+<entry key="calculateupdatereservationStatus">
+UPDATE TRAVEL_RESERVATION A
+       SET A.RESERVATION_STATUS = '6'
+     WHERE A.TRAVEL_RESERVATION_NO = ?
+</entry>
+
+</properties>

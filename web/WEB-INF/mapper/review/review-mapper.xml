@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+	<entry key="insertThumbnailContent">
+          INSERT
+          INTO REVIEWBOARD A
+        (
+          A.BOARD_NO
+        , A.BOARD_TYPE
+        , A.BOARD_TITLE
+        , A.BOARD_BODY
+        , A.BOARD_WRITER_MEMBER_NO 
+        , A.TRAVEL_NO
+        , A.TRAVEL_RESERVATION_NO
+        )
+       VALUES
+        (
+          SEQ_BOARD_NO.NEXTVAL
+        , 2
+        , ?
+        , ?
+        , ?
+        , SEQ_TRAVEL_NO.NEXTVAL
+        , SEQ_TRAVEL_RESERVATION_NO.NEXTVAL
+        )
+	</entry>
+	<entry key="selectThumbnailSequence">
+        SELECT
+               SEQ_BOARD_NO.CURRVAL
+          FROM DUAL
+	</entry>
+	<entry key="insertAttachment">
+        INSERT
+          INTO REVIEWATTACHMENT A
+        (
+          A.R_ATTACHMENT_NO_1
+        , A.REF_BOARD_NO_1
+        , A.ORIGINAL_NAME_1
+        , A.SAVED_NAME_1
+        , A.SAVE_PATH_1
+        , A.FILE_TYPE_1
+        , A.THUMBNAIL_PATH_1
+        , B.TRAVEL_RESERVATION_NO        
+        )
+         SELECT
+        	?
+        , SEQ_R_ATTACHMENT_NO_1.NEXTVAL
+        , ?
+        , ?
+        , ?
+        , ?
+        , ?
+        , ?
+        , B.RESERVATION_NO
+     	FROM TRAVEL_RESERVATION B
+     	WHERE B.TRAVEL_RESERVATION_NO = ?
+        )
+	</entry>
+
+	<entry key="selectThumbnailList">
+		  SELECT 
+		  C.REF_BOARD_NO_1
+        , C.R_ATTACHMENT_NO_1
+        , C.ORIGINAL_NAME_1
+        , C.SAVED_NAME_1
+        , C.THUMBNAIL_PATH_1
+        FROM REVIEWATTACHMENT C
+	</entry>
+</properties>
